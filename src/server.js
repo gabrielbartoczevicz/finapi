@@ -11,7 +11,7 @@ const accountsRepository = new AccountsRepository();
 app.post('/accounts', (request, response) => {
   const { cpf, name } = request.body;
 
-  let account = accountsRepository.findAccountByCPF(cpf);
+  let account = accountsRepository.findByCPF(cpf);
 
   if (account) {
     console.log('Account Found', account);
@@ -22,12 +22,24 @@ app.post('/accounts', (request, response) => {
   account = accountsRepository.save({
     cpf, 
     name,
-    statements: []
+    statement: []
   });
 
   console.log(account);
 
   return response.sendStatus(201);
+});
+
+app.get('/accounts/:id/statement', (request, response) => {
+  const { id } = request.params;
+
+  const account = accountsRepository.findById(id);
+
+  if (!account) {
+    return response.status(404).json({ message: `Account with ID ${id} not found` });
+  }
+
+  return response.json(account.statement);
 });
 
 app.listen(3333, () => console.log('Server started at :3333'));
