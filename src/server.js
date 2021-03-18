@@ -11,7 +11,15 @@ const accountsRepository = new AccountsRepository();
 app.post('/accounts', (request, response) => {
   const { cpf, name } = request.body;
 
-  const account = accountsRepository.save({
+  let account = accountsRepository.findAccountByCPF(cpf);
+
+  if (account) {
+    console.log('Account Found', account);
+
+    return response.status(422).json({ message: `CPF ${cpf} already in use` });
+  }
+
+  account = accountsRepository.save({
     cpf, 
     name,
     statements: []

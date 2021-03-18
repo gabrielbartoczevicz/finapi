@@ -14,6 +14,12 @@ class AccountsRepository {
 
     return account;
   }
+
+  findAccountByCPF(cpf) {
+    const account = this.accounts.find(account => account.cpf === cpf);
+
+    return account;
+  }
 }
 
 module.exports = AccountsRepository;
