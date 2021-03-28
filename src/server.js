@@ -59,7 +59,9 @@ app.use(checkIfAccountExistsMiddleware);
 app.get("/account", (request, response) => {
   const { account } = request;
 
-  return response.json(account);
+  const balance = getBalanceFromAccount(account);
+
+  return response.json({ ...account, balance });
 });
 
 app.put("/account", (request, response) => {
@@ -71,6 +73,14 @@ app.put("/account", (request, response) => {
   accountsRepository.save(account);
 
   return response.sendStatus(200);
+});
+
+app.delete("/account", (request, response) => {
+  const { account } = request;
+
+  accountsRepository.delete(account);
+
+  return response.sendStatus(204);
 });
 
 app.get("/statement", (request, response) => {

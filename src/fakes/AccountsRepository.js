@@ -32,6 +32,14 @@ class AccountsRepository {
 
     return account;
   }
+
+  delete({ id }) {
+    const accountIndex = this.accounts.findIndex(
+      (account) => account.id === id
+    );
+
+    this.accounts.splice(accountIndex, 1);
+  }
 }
 
 module.exports = AccountsRepository;
