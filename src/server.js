@@ -1,6 +1,6 @@
-const express = require('express');
+const express = require("express");
 
-const AccountsRepository = require('./fakes/AccountsRepository');
+const AccountsRepository = require("./fakes/AccountsRepository");
 
 const app = express();
 
@@ -8,38 +8,46 @@ app.use(express.json());
 
 const accountsRepository = new AccountsRepository();
 
-app.post('/accounts', (request, response) => {
+function checkIfAccountExistsMiddleware(request, response, next) {
+  const { token } = request.headers;
+
+  const account = accountsRepository.findById(token);
+
+  if (!account) {
+    return response.status(403).json({ message: "Account not found" });
+  }
+
+  request.account = account;
+
+  return next();
+}
+
+app.post("/accounts", (request, response) => {
   const { cpf, name } = request.body;
 
   let account = accountsRepository.findByCPF(cpf);
 
   if (account) {
-    console.log('Account Found', account);
+    console.log("Account Found", account);
 
     return response.status(422).json({ message: `CPF ${cpf} already in use` });
   }
 
   account = accountsRepository.save({
-    cpf, 
+    cpf,
     name,
-    statement: []
+    statement: [],
   });
 
-  console.log(account);
-
-  return response.sendStatus(201);
+  return response.json(account);
 });
 
-app.get('/accounts/:id/statement', (request, response) => {
-  const { id } = request.params;
+app.use(checkIfAccountExistsMiddleware);
 
-  const account = accountsRepository.findById(id);
-
-  if (!account) {
-    return response.status(404).json({ message: `Account with ID ${id} not found` });
-  }
+app.get("/statement", (request, response) => {
+  const { account } = request;
 
   return response.json(account.statement);
 });
 
-app.listen(3333, () => console.log('Server started at :3333'));
+app.listen(3333, () => console.log("Server started at :3333"));
