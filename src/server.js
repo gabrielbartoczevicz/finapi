@@ -22,6 +22,20 @@ function checkIfAccountExistsMiddleware(request, response, next) {
   return next();
 }
 
+function getBalanceFromAccount(account) {
+  const { statement } = account;
+
+  const balance = statement.reduce((acc, operation) => {
+    if (operation.type === "credit") {
+      return acc + operation.amount;
+    }
+
+    return acc - operation.amount;
+  }, 0);
+
+  return balance;
+}
+
 app.post("/accounts", (request, response) => {
   const { cpf, name } = request.body;
 
@@ -60,6 +74,30 @@ app.post("/deposit", (request, response) => {
     amount,
     created_at: new Date(),
     type: "credit",
+  };
+
+  account.statement.push(statementOperation);
+
+  accountsRepository.save(account);
+
+  return response.json(account);
+});
+
+app.post("/withdraw", (request, response) => {
+  const { amount } = request.body;
+
+  const { account } = request;
+
+  const balance = getBalanceFromAccount(account);
+
+  if (balance < amount) {
+    return response.status(422).json({ message: "Insufficient balance" });
+  }
+
+  const statementOperation = {
+    amount,
+    created_at: new Date(),
+    type: "debit",
   };
 
   account.statement.push(statementOperation);
