@@ -9,9 +9,9 @@ app.use(express.json());
 const accountsRepository = new AccountsRepository();
 
 function checkIfAccountExistsMiddleware(request, response, next) {
-  const { token } = request.headers;
+  const { cpf } = request.headers;
 
-  const account = accountsRepository.findById(token);
+  const account = accountsRepository.findByCPF(cpf);
 
   if (!account) {
     return response.status(403).json({ message: "Account not found" });
@@ -42,8 +42,6 @@ app.post("/accounts", (request, response) => {
   let account = accountsRepository.findByCPF(cpf);
 
   if (account) {
-    console.log("Account Found", account);
-
     return response.status(422).json({ message: `CPF ${cpf} already in use` });
   }
 
@@ -53,10 +51,27 @@ app.post("/accounts", (request, response) => {
     statement: [],
   });
 
-  return response.json(account);
+  return response.sendStatus(201);
 });
 
 app.use(checkIfAccountExistsMiddleware);
+
+app.get("/account", (request, response) => {
+  const { account } = request;
+
+  return response.json(account);
+});
+
+app.put("/account", (request, response) => {
+  const { account } = request;
+  const { name } = request.body;
+
+  account.name = name;
+
+  accountsRepository.save(account);
+
+  return response.sendStatus(200);
+});
 
 app.get("/statement", (request, response) => {
   const { account } = request;
@@ -92,7 +107,7 @@ app.post("/deposit", (request, response) => {
 
   accountsRepository.save(account);
 
-  return response.json(account);
+  return response.sendStatus(201);
 });
 
 app.post("/withdraw", (request, response) => {
@@ -116,7 +131,7 @@ app.post("/withdraw", (request, response) => {
 
   accountsRepository.save(account);
 
-  return response.json(account);
+  return response.sendStatus(201);
 });
 
 app.listen(3333, () => console.log("Server started at :3333"));

@@ -7,8 +7,8 @@
 - [x] Deve ser possível realizar um depósito
 - [x] Deve ser possível realizar um saque
 - [x] Deve ser possível buscar o extrato bancário do cliente por data
-- [ ] Deve ser possível atualizar os dados da conta
-- [ ] Deve ser possível obter os dados da conta
+- [x] Deve ser possível atualizar os dados da conta
+- [x] Deve ser possível obter os dados da conta
 - [ ] Deve ser possível deletar a conta
 
 ## Regras de Negócio

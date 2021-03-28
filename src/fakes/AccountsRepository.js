@@ -26,13 +26,9 @@ class AccountsRepository {
   }
 
   findByCPF(cpf) {
-    const account = this.accounts.find((account) => account.cpf === cpf);
-
-    return account;
-  }
-
-  findById(id) {
-    const account = this.accounts.find((account) => account.id === id);
+    const account = this.accounts.find(
+      (account) => account.cpf === Number(cpf)
+    );
 
     return account;
   }
