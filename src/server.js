@@ -50,4 +50,23 @@ app.get("/statement", (request, response) => {
   return response.json(account.statement);
 });
 
+app.post("/deposit", (request, response) => {
+  const { description, amount } = request.body;
+
+  const { account } = request;
+
+  const statementOperation = {
+    description,
+    amount,
+    created_at: new Date(),
+    type: "credit",
+  };
+
+  account.statement.push(statementOperation);
+
+  accountsRepository.save(account);
+
+  return response.json(account);
+});
+
 app.listen(3333, () => console.log("Server started at :3333"));

@@ -5,14 +5,24 @@ class AccountsRepository {
     this.accounts = [];
   }
 
-  save({ cpf, name, statement }) {
-    const account = {};
+  save(account) {
+    const { id } = account;
 
-    Object.assign(account, { id: uuid(), cpf, name, statement });
+    if (!id) {
+      Object.assign(account, { id: uuid() });
 
-    this.accounts.push(account);
+      this.accounts.push(account);
 
-    return account;
+      return account;
+    }
+
+    const accountIndex = this.accounts.findIndex(
+      (toFindAccount) => toFindAccount.id === id
+    );
+
+    this.accounts[accountIndex] = account;
+
+    return this.accounts[accountIndex];
   }
 
   findByCPF(cpf) {
@@ -23,8 +33,6 @@ class AccountsRepository {
 
   findById(id) {
     const account = this.accounts.find((account) => account.id === id);
-
-    console.log("Repo", account);
 
     return account;
   }
