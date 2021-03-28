@@ -60,8 +60,20 @@ app.use(checkIfAccountExistsMiddleware);
 
 app.get("/statement", (request, response) => {
   const { account } = request;
+  const { date } = request.query;
 
-  return response.json(account.statement);
+  if (!date) {
+    return response.json(account.statement);
+  }
+
+  const dateFormat = new Date(`${date} 00:00`);
+
+  const statement = account.statement.filter(
+    (statement) =>
+      statement.created_at.toDateString() === dateFormat.toDateString()
+  );
+
+  return response.json(statement);
 });
 
 app.post("/deposit", (request, response) => {
